@@ -1,0 +1,63 @@
+1)Where exactly in your code does the grade get calculated?
+The grade is calculated inside the calculate_grade() function in app.py.
+Grade Calculation Function
+def calculate_grade(percentage):
+    if percentage >= 90:
+        return "A"
+    elif percentage >= 75:
+        return "B"
+    elif percentage >= 60:
+        return "C"
+    elif percentage >= 45:
+        return "D"
+    else:
+        return "F"
+This function is reused in:
+/students/<id>/marks
+/students/<id>/report
+/summary
+The percentage is first calculated using:
+percentage = (score / max_score) * 100
+Then the percentage is passed to the grade function.
+Example:
+grade = calculate_grade(percentage)
+
+2)What SQL query gives the class average in /summary?
+The SQL query used to calculate the class average percentage is:
+SELECT AVG((score / max_score) * 100) AS class_average
+FROM marks;
+Explanation:
+score / max_score calculates subject percentage
+* 100 converts it into percentage
+AVG() calculates the overall class average
+
+3)What happens if someone sends a score of -10 or 150 when max_score is 100?
+The API validates the marks before inserting into the database.
+
+Validation code:
+
+if score < 0 or score > max_score:
+
+    return jsonify({
+        "error": "Invalid score"
+    }), 400
+
+If the user sends:
+{
+  "subject": "Math",
+  "score": -10,
+  "max_score": 100
+}
+OR
+{
+  "subject": "Math",
+  "score": 150,
+  "max_score": 100
+}
+The API returns:
+{
+  "error": "Invalid score"
+}
+HTTP Status Code:
+400 Bad Request
+This prevents invalid marks from being stored in the database.
